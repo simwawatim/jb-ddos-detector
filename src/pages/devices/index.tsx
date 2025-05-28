@@ -1,14 +1,10 @@
-import Image from "next/image";
-import Navbar from "../../componets/navbar";
-import SideNav from "../../componets/side-nav";
-import HomeCards from "../../componets/card";
-import Traffic from "../../componets/traffic";
+import Navbar from "../../../componets/navbar";
+import SideNav from "../../../componets/side-nav";
+import DevicesTable from "./componets/device-table";    
 
-
-
-export default function Home() {
-  return (
-    <>
+export default function Devices() {
+    return (
+       <>
       <Navbar />
 
       <div className="container mx-auto p-4">
@@ -20,11 +16,10 @@ export default function Home() {
 
           {/* Main content: Gallery and Cards stacked in the same column */}
           <div className="col-span-12 md:col-span-8 space-y-5">
-           <HomeCards/>
-            <Traffic/>
+           <DevicesTable/>
           </div>
         </div>
       </div>
     </>
-  );
+    );
 }
