@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight } from "lucide-react";
-
+import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
 
 interface TrafficEntry {
   source_ip: string;
@@ -35,7 +34,6 @@ const Traffic = () => {
   }, []);
 
   useEffect(() => {
-    // Reset to first page if new data is shorter than expected
     const totalPages = Math.ceil(trafficData.length / itemsPerPage);
     if (currentPage > totalPages) {
       setCurrentPage(1);
@@ -49,16 +47,25 @@ const Traffic = () => {
   };
 
   const getProtocolColor = (protocol: string): string => {
-    switch (protocol.toUpperCase()) {
-      case 'TCP':
-        return 'bg-blue-100 text-blue-700';
-      case 'UDP':
-        return 'bg-purple-100 text-purple-700';
-      case 'ICMP':
-        return 'bg-orange-100 text-orange-700';
-      default:
-        return 'bg-gray-100 text-gray-700';
-    }
+    const colorMap: { [key: string]: string } = {
+      TCP: "bg-blue-100 text-blue-700",
+      UDP: "bg-purple-100 text-purple-700",
+      ICMP: "bg-orange-100 text-orange-700",
+      DNS: "bg-red-100 text-red-700",
+      HTTP: "bg-green-100 text-green-700",
+      HTTPS: "bg-green-200 text-green-800",
+      SSH: "bg-yellow-100 text-yellow-700",
+      FTP: "bg-pink-100 text-pink-700",
+      SMTP: "bg-rose-100 text-rose-700",
+      POP3: "bg-teal-100 text-teal-700",
+      IMAP: "bg-indigo-100 text-indigo-700",
+      RDP: "bg-fuchsia-100 text-fuchsia-700",
+      MySQL: "bg-cyan-100 text-cyan-700",
+      Redis: "bg-amber-100 text-amber-700",
+      MongoDB: "bg-lime-100 text-lime-700",
+      ARP: "bg-slate-100 text-slate-700",
+    };
+    return colorMap[protocol.toUpperCase()] || "bg-gray-100 text-gray-700";
   };
 
   const totalPages = Math.max(1, Math.ceil(trafficData.length / itemsPerPage));
@@ -68,7 +75,7 @@ const Traffic = () => {
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg text-white">
       <table className="w-full text-sm text-left dark:bg-gray-900">
-        <thead className="text-xs text-gray-700 uppercase p-6 rounded-lg shadow-sm text-white dark:bg-gray-900 text-center">
+        <thead className="text-xs text-gray-700 uppercase text-white dark:bg-gray-900 text-center">
           <tr>
             <th className="px-6 py-3">Source IP</th>
             <th className="px-6 py-3">Destination IP</th>
@@ -90,31 +97,32 @@ const Traffic = () => {
           ) : (
             paginatedData.map((entry, index) => (
               <tr key={index} className="dark:bg-gray-900">
-                <td className="px-6 py-4 text-white">{entry.source_ip}</td>
-                <td className="px-6 py-4 text-white">{entry.dest_ip}</td>
-                <td className="px-6 py-4 text-white">
+                <td className="px-6 py-4">{entry.source_ip}</td>
+                <td className="px-6 py-4">{entry.dest_ip}</td>
+                <td className="px-6 py-4">
                   <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getProtocolColor(entry.protocol)}`}>
                     {entry.protocol}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-white">{entry.port}</td>
-                <td className="px-6 py-4 text-white">{entry.packets}</td>
-                <td className="px-6 py-4 text-white">{entry.bytes}</td>
-                <td className="px-6 py-4 text-white">
+                <td className="px-6 py-4">{entry.port}</td>
+                <td className="px-6 py-4">{entry.packets}</td>
+                <td className="px-6 py-4">{entry.bytes}</td>
+                <td className="px-6 py-4">
                   <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getTrafficColor(entry.packets)}`}>
                     {entry.packets > 1000 ? 'High' : entry.packets > 500 ? 'Moderate' : 'Normal'}
                   </span>
                 </td>
-                <td className="px-6 py-4 space-x-2">
-                  <a
-                    href={`/map?ip=${entry.source_ip}`}
-                    className="font-medium text-blue-600 hover:underline"
-                  >
-                    View
-                  </a>
-                  <a href="#" className="font-medium text-blue-600 hover:underline">
-                    Edit
-                  </a>
+                <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
+                    <a
+                        href={`/map?ip=${entry.source_ip}`}
+                        className="text-blue-600 hover:text-blue-800 inline-flex items-center justify-center"
+                        title="View on map"
+                    >
+                        <Eye className="w-6 h-6" />
+                    </a>
+                    </td>
+
                 </td>
               </tr>
             ))
@@ -124,26 +132,21 @@ const Traffic = () => {
 
       {/* Pagination */}
       {trafficData.length > itemsPerPage && (
-       <div className="flex justify-center mt-4 space-x-2">
-        <button
+        <div className="flex justify-center mt-4 space-x-2">
+          <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-           
-        >
+          >
             <ChevronLeft className="w-5 h-5" />
-        </button>
-        
-        <span className="px-4 py-2">{currentPage} / {totalPages}</span>
-        
-        <button
+          </button>
+          <span className="px-4 py-2">{currentPage} / {totalPages}</span>
+          <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-           
-        >
+          >
             <ChevronRight className="w-5 h-5" />
-        </button>
+          </button>
         </div>
-
       )}
     </div>
   );

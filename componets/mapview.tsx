@@ -35,7 +35,7 @@ const GoogleMapsView = () => {
         const [lat, lng] = data.loc.split(',').map(Number);
         setLocation({ lat, lng });
       } else {
-        setError('Location not found for the given IP');
+        1
       }
     } catch (err) {
       setError('Could not fetch location');
