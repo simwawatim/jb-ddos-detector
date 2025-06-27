@@ -36,7 +36,7 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setEmail(null);
-    router.push('/login'); // ⬅️ Redirect to login page
+    router.push('/login');
   };
 
   const goToUsers = () => {
@@ -44,24 +44,26 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-md px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+    <nav className="sticky top-0 z-50 bg-black border-b border-green-500 shadow-lg px-4 py-3">
+      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 font-mono">
         
         {/* Logo */}
         <a href="/" className="flex items-center space-x-2">
           <img
-            src="https://img.icons8.com/external-flat-icons-vectorslab/68/external-File-Share-network-and-communication-flat-icons-vectorslab.png"
+            src="https://img.icons8.com/fluency/48/hacker.png"
             alt="Logo"
-            className="h-8 w-8"
+            className="h-10 w-10"
           />
-          <span className="text-2xl font-bold text-gray-800 dark:text-white">NTM</span>
+          <span className="text-2xl font-bold text-green-400 tracking-widest">
+            CYBER-NTM
+          </span>
         </a>
 
         {/* Welcome + Time */}
         {email && (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-6 text-sm sm:text-base text-gray-800 dark:text-white">
-            <span>👋 Welcome, <span className="font-semibold">{email}</span></span>
-            <span className="text-gray-600 dark:text-gray-300">🕒 {currentTime}</span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-6 text-sm sm:text-base text-green-300">
+            <span>🛡️ User: <span className="font-semibold text-green-400">{email}</span></span>
+            <span>⏱️ {currentTime}</span>
           </div>
         )}
 
@@ -69,7 +71,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={goToUsers}
-            className="text-sm sm:text-base font-medium text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="px-3 py-1 rounded border border-green-500 text-green-400 hover:bg-green-600 hover:text-black transition duration-200"
           >
             Users
           </button>
@@ -77,7 +79,7 @@ const Navbar = () => {
           {email && (
             <button
               onClick={handleLogout}
-              className="px-3 py-1 rounded bg-red-600 text-white text-sm hover:bg-red-700 transition"
+              className="px-3 py-1 rounded bg-red-700 hover:bg-red-600 text-white font-bold tracking-wide transition duration-200"
             >
               Logout
             </button>
@@ -86,7 +88,7 @@ const Navbar = () => {
           <img
             src="https://randomuser.me/api/portraits/men/75.jpg"
             alt="User Avatar"
-            className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600"
+            className="w-10 h-10 rounded-full border-2 border-green-500"
           />
         </div>
       </div>
