@@ -14,13 +14,27 @@ const Navbar = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decoded = jwtDecode<DecodedToken>(token);
-        setEmail(decoded.sub);
-      } catch (e) {
-        console.error('Failed to decode token', e);
+    if (!token) {
+      // router.push('/login');
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode<DecodedToken>(token);
+
+      // Optional: Check token expiration
+      if (decoded.exp * 1000 < Date.now()) {
+        localStorage.removeItem('token');
+        router.push('/login');
+        return;
       }
+
+      setEmail(decoded.sub);
+    } catch (e) {
+      console.error('Failed to decode token', e);
+      localStorage.removeItem('token');
+      router.push('/login');
+      return;
     }
 
     const updateTime = () => {
@@ -31,7 +45,7 @@ const Navbar = () => {
     updateTime();
     const interval = setInterval(updateTime, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -43,6 +57,10 @@ const Navbar = () => {
     router.push('/users');
   };
 
+  function goToDevices(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    event.preventDefault();
+    router.push('/devices');
+  }
   return (
     <nav className="sticky top-0 z-50 bg-black border-b border-green-500 shadow-lg px-4 py-3">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 font-mono">
@@ -55,7 +73,7 @@ const Navbar = () => {
             className="h-10 w-10"
           />
           <span className="text-2xl font-bold text-green-400 tracking-widest">
-            CYBER-NTM
+            NBA
           </span>
         </a>
 
@@ -69,6 +87,13 @@ const Navbar = () => {
 
         {/* Buttons */}
         <div className="flex items-center gap-4">
+          <button
+            onClick={goToDevices}
+            className="px-3 py-1 rounded border border-green-500 text-green-400 hover:bg-green-600 hover:text-black transition duration-200"
+          >
+            Devices
+          </button>
+
           <button
             onClick={goToUsers}
             className="px-3 py-1 rounded border border-green-500 text-green-400 hover:bg-green-600 hover:text-black transition duration-200"
@@ -84,12 +109,6 @@ const Navbar = () => {
               Logout
             </button>
           )}
-
-          <img
-            src="https://randomuser.me/api/portraits/men/75.jpg"
-            alt="User Avatar"
-            className="w-10 h-10 rounded-full border-2 border-green-500"
-          />
         </div>
       </div>
     </nav>
