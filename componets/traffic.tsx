@@ -16,12 +16,13 @@ interface TrafficEntry {
   blacklisted?: string;
 }
 
+const DEFAULT_VISIBLE_COUNT = 50;
+
 const Traffic = () => {
   const [trafficData, setTrafficData] = useState<TrafficEntry[]>([]);
   const [filterText, setFilterText] = useState('');
-  const [visibleCount, setVisibleCount] = useState(20);
+  const [visibleCount, setVisibleCount] = useState(DEFAULT_VISIBLE_COUNT);
   const [failCount, setFailCount] = useState(0);
-
   const [manualFilter, setManualFilter] = useState<boolean | null>(null);
   const [showOnlyMalicious, setShowOnlyMalicious] = useState(false);
 
@@ -46,12 +47,9 @@ const Traffic = () => {
       setTrafficData(dataWithIds);
       setFailCount(0);
 
+      // ✅ FIXED: Show all traffic by default
       if (manualFilter === null) {
-        setShowOnlyMalicious(true);
-        if (timerRef.current) clearTimeout(timerRef.current);
-        timerRef.current = setTimeout(() => {
-          setShowOnlyMalicious(false);
-        }, 2000);
+        setShowOnlyMalicious(false);
       } else {
         setShowOnlyMalicious(manualFilter);
       }
@@ -70,7 +68,6 @@ const Traffic = () => {
     };
   }, [manualFilter]);
 
-  // Show error UI on first failure
   if (failCount >= 1) {
     return (
       <div className="flex flex-col items-center justify-center h-64 bg-gray-900 text-red-500 text-3xl font-mono select-none">
@@ -127,9 +124,10 @@ const Traffic = () => {
   );
 
   const maliciousFilterActive = manualFilter !== null ? manualFilter : showOnlyMalicious;
+
   const visibleTraffic = maliciousFilterActive
     ? filteredTraffic.filter(entry => entry.is_malicious)
-    : filteredTraffic;
+    : [...filteredTraffic].sort((a, b) => (a.is_malicious ? 1 : 0) - (b.is_malicious ? 1 : 0));
 
   const pagedTraffic = visibleTraffic.slice(0, visibleCount);
 
@@ -143,20 +141,16 @@ const Traffic = () => {
           value={filterText}
           onChange={(e) => {
             setFilterText(e.target.value);
-            setVisibleCount(20);
+            setVisibleCount(DEFAULT_VISIBLE_COUNT);
           }}
         />
 
         <button
           className="px-4 py-2 rounded bg-cyan-600 hover:bg-cyan-700 text-white font-medium transition"
           onClick={() => {
-            if (manualFilter === true) {
-              setManualFilter(false);
-              setShowOnlyMalicious(false);
-            } else {
-              setManualFilter(true);
-              setShowOnlyMalicious(true);
-            }
+            const newValue = !(manualFilter ?? showOnlyMalicious);
+            setManualFilter(newValue);
+            setShowOnlyMalicious(newValue);
           }}
         >
           {maliciousFilterActive ? 'Show All Traffic' : 'Show Malicious Only'}

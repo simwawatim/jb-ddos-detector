@@ -14,6 +14,8 @@ const Navbar = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+
+    // Redirect immediately if token is missing
     if (!token) {
       // router.push('/login');
       return;
@@ -22,7 +24,7 @@ const Navbar = () => {
     try {
       const decoded = jwtDecode<DecodedToken>(token);
 
-      // Optional: Check token expiration
+      // Redirect if token has expired
       if (decoded.exp * 1000 < Date.now()) {
         localStorage.removeItem('token');
         router.push('/login');
@@ -37,30 +39,36 @@ const Navbar = () => {
       return;
     }
 
+    // Time updater
     const updateTime = () => {
       const now = new Date();
-      setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      setCurrentTime(
+        now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      );
     };
 
-    updateTime();
-    const interval = setInterval(updateTime, 60000);
-    return () => clearInterval(interval);
+    updateTime(); // Set initial time
+    const interval = setInterval(updateTime, 60000); // Update every minute
+    return () => clearInterval(interval); // Clean up
   }, [router]);
 
+  // Logout
   const handleLogout = () => {
     localStorage.removeItem('token');
     setEmail(null);
     router.push('/login');
   };
 
+  // Navigation
   const goToUsers = () => {
     router.push('/users');
   };
 
-  function goToDevices(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+  const goToDevices = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     router.push('/devices');
-  }
+  };
+
   return (
     <nav className="sticky top-0 z-50 bg-black border-b border-green-500 shadow-lg px-4 py-3">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 font-mono">
@@ -85,7 +93,7 @@ const Navbar = () => {
           </div>
         )}
 
-        {/* Buttons */}
+        {/* Navigation Buttons */}
         <div className="flex items-center gap-4">
           <button
             onClick={goToDevices}
